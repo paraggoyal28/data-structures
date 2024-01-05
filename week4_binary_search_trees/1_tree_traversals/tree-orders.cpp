@@ -5,57 +5,95 @@
 #include <sys/resource.h>
 #endif
 
-using std::vector;
-using std::ios_base;
 using std::cin;
 using std::cout;
+using std::ios_base;
+using std::vector;
 
-class TreeOrders {
+class TreeOrders
+{
   int n;
-  vector <int> key;
-  vector <int> left;
-  vector <int> right;
+  vector<int> key;
+  vector<int> left;
+  vector<int> right;
 
 public:
-  void read() {
+  void read()
+  {
     cin >> n;
     key.resize(n);
     left.resize(n);
     right.resize(n);
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
       cin >> key[i] >> left[i] >> right[i];
     }
   }
 
+  void findInorder(int rootIndex, vector<int> &result)
+  {
+    if (rootIndex != -1)
+    {
+      findInorder(left[rootIndex], result);
+      result.push_back(key[rootIndex]);
+      findInorder(right[rootIndex], result);
+    }
+  }
 
-  vector <int> in_order() {
+  void findPreorder(int rootIndex, vector<int> &result)
+  {
+    if (rootIndex != -1)
+    {
+      result.push_back(key[rootIndex]);
+      findPreorder(left[rootIndex], result);
+      findPreorder(right[rootIndex], result);
+    }
+  }
+
+  void findPostorder(int rootIndex, vector<int> &result)
+  {
+    if (rootIndex != -1)
+    {
+      findPostorder(left[rootIndex], result);
+      findPostorder(right[rootIndex], result);
+      result.push_back(key[rootIndex]);
+    }
+  }
+
+  vector<int> in_order()
+  {
     vector<int> result;
     // Finish the implementation
     // You may need to add a new recursive method to do that
-
+    findInorder(0, result);
     return result;
   }
 
-  vector <int> pre_order() {
-    vector<int> result;    
-    // Finish the implementation
-    // You may need to add a new recursive method to do that
-    
-    return result;
-  }
-
-  vector <int> post_order() {
+  vector<int> pre_order()
+  {
     vector<int> result;
     // Finish the implementation
     // You may need to add a new recursive method to do that
-    
+    findPreorder(0, result);
+    return result;
+  }
+
+  vector<int> post_order()
+  {
+    vector<int> result;
+    // Finish the implementation
+    // You may need to add a new recursive method to do that
+    findPostorder(0, result);
     return result;
   }
 };
 
-void print(vector <int> a) {
-  for (size_t i = 0; i < a.size(); i++) {
-    if (i > 0) {
+void print(vector<int> a)
+{
+  for (size_t i = 0; i < a.size(); i++)
+  {
+    if (i > 0)
+    {
       cout << ' ';
     }
     cout << a[i];
@@ -63,7 +101,8 @@ void print(vector <int> a) {
   cout << '\n';
 }
 
-int main_with_large_stack_space() {
+int main_with_large_stack_space()
+{
   ios_base::sync_with_stdio(0);
   TreeOrders t;
   t.read();
@@ -73,29 +112,28 @@ int main_with_large_stack_space() {
   return 0;
 }
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 #if defined(__unix__) || defined(__APPLE__)
   // Allow larger stack space
-  const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
+  const rlim_t kStackSize = 16 * 1024 * 1024; // min stack size = 16 MB
   struct rlimit rl;
   int result;
 
   result = getrlimit(RLIMIT_STACK, &rl);
   if (result == 0)
   {
-      if (rl.rlim_cur < kStackSize)
+    if (rl.rlim_cur < kStackSize)
+    {
+      rl.rlim_cur = kStackSize;
+      result = setrlimit(RLIMIT_STACK, &rl);
+      if (result != 0)
       {
-          rl.rlim_cur = kStackSize;
-          result = setrlimit(RLIMIT_STACK, &rl);
-          if (result != 0)
-          {
-              std::cerr << "setrlimit returned result = " << result << std::endl;
-          }
+        std::cerr << "setrlimit returned result = " << result << std::endl;
       }
+    }
   }
 #endif
 
   return main_with_large_stack_space();
 }
-
